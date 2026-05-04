@@ -1,0 +1,1586 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aesthetic Generator — Color & Type</title>
+<meta name="description" content="Generate cohesive color palettes and font pairings for your next project.">
+
+<!-- UI Shell Fonts: DM Sans (headings) + Instrument Sans (body) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700;1,9..40,300&family=Instrument+Sans:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════════
+   CSS CUSTOM PROPERTIES — DESIGN TOKENS
+   UI shell only. Generated colors live in JS.
+═══════════════════════════════════════════════ */
+:root {
+  /* Light theme */
+  --bg: #f5f4f1;
+  --bg-card: #ffffff;
+  --bg-panel: #f0ede8;
+  --text: #1a1917;
+  --text-muted: #6b6560;
+  --text-faint: #a09990;
+  --border: rgba(0,0,0,0.08);
+  --border-strong: rgba(0,0,0,0.14);
+  --accent: #d4500a;
+  --accent-hover: #b84008;
+  --accent-subtle: rgba(212,80,10,0.08);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-lg: 0 12px 32px rgba(0,0,0,0.10), 0 4px 8px rgba(0,0,0,0.05);
+  --radius: 12px;
+  --radius-sm: 7px;
+  --radius-lg: 18px;
+  --transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="dark"] {
+  --bg: #161614;
+  --bg-card: #1f1f1c;
+  --bg-panel: #272722;
+  --text: #f0ede8;
+  --text-muted: #9d9890;
+  --text-faint: #5c5850;
+  --border: rgba(255,255,255,0.07);
+  --border-strong: rgba(255,255,255,0.12);
+  --accent: #e8620f;
+  --accent-hover: #f07030;
+  --accent-subtle: rgba(232,98,15,0.10);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.25);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.35);
+  --shadow-lg: 0 12px 32px rgba(0,0,0,0.45);
+}
+
+/* ═══════════════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+
+body {
+  font-family: 'Instrument Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  transition: background var(--transition), color var(--transition);
+  line-height: 1.6;
+}
+
+/* Smooth theme transitions — but not on elements that override */
+body, .card, .panel, header, footer {
+  transition:
+    background-color var(--transition),
+    color var(--transition),
+    border-color var(--transition);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════════════ */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  gap: 16px;
+}
+
+.logo {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.logo-mark {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  line-height: 1;
+}
+
+.logo-mark span {
+  color: var(--accent);
+}
+
+.logo-tag {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-faint);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+main {
+  padding: 40px 0 80px;
+}
+
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+/* ═══════════════════════════════════════════════
+   CARDS & PANELS
+═══════════════════════════════════════════════ */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.card-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.card-body {
+  padding: 24px;
+}
+
+/* ═══════════════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════════════ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  font-family: 'Instrument Sans', sans-serif;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background-color var(--transition),
+    color var(--transition),
+    box-shadow var(--transition),
+    transform 80ms ease,
+    opacity var(--transition);
+  white-space: nowrap;
+  text-decoration: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.btn:active { transform: translateY(1px); }
+
+/* Primary */
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+}
+.btn-primary:hover { background: var(--accent-hover); }
+
+/* Secondary */
+.btn-secondary {
+  background: var(--bg-panel);
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+.btn-secondary:hover { background: var(--border); }
+
+/* Ghost */
+.btn-ghost {
+  background: transparent;
+  color: var(--text-muted);
+  border-color: var(--border);
+}
+.btn-ghost:hover {
+  background: var(--accent-subtle);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* Icon */
+.btn-icon {
+  padding: 8px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+.btn-icon:hover {
+  background: var(--bg-panel);
+  color: var(--text);
+}
+
+/* Controls row */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+/* Shuffle large button */
+.btn-shuffle {
+  font-size: 15px;
+  font-weight: 700;
+  padding: 11px 22px;
+  letter-spacing: -0.01em;
+}
+
+/* ═══════════════════════════════════════════════
+   SWATCHES
+═══════════════════════════════════════════════ */
+.swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.swatch-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 100px;
+  min-width: 80px;
+  max-width: 160px;
+}
+
+.swatch {
+  width: 100%;
+  aspect-ratio: 1.2;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  position: relative;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.swatch:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.swatch:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.swatch:active { transform: translateY(0); }
+
+.swatch-copy-hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: rgba(0,0,0,0.35);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  opacity: 0;
+  transition: opacity 150ms;
+}
+
+.swatch:hover .swatch-copy-hint,
+.swatch:focus-visible .swatch-copy-hint { opacity: 1; }
+
+.swatch-hex {
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+
+.contrast-badges {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  line-height: 1.4;
+  letter-spacing: 0.04em;
+}
+
+.badge-pass {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.badge-fail {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+[data-theme="dark"] .badge-pass {
+  background: rgba(5,150,105,0.2);
+  color: #34d399;
+}
+
+[data-theme="dark"] .badge-fail {
+  background: rgba(239,68,68,0.15);
+  color: #f87171;
+}
+
+/* ═══════════════════════════════════════════════
+   FONT PAIRING
+═══════════════════════════════════════════════ */
+.font-meta {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.font-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.font-chip-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.font-chip-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+/* Preview card — neutral background always */
+.preview-wrap {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 36px 32px;
+  background: #f8f8f7; /* intentionally neutral — not theme-aware */
+  position: relative;
+  overflow: hidden;
+}
+
+[data-theme="dark"] .preview-wrap {
+  background: #222220;
+}
+
+.preview-wrap::before {
+  content: 'PREVIEW';
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: rgba(0,0,0,0.15);
+}
+
+[data-theme="dark"] .preview-wrap::before { color: rgba(255,255,255,0.1); }
+
+#preview-h1 {
+  font-size: clamp(26px, 5vw, 40px);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: #1a1917;
+  margin-bottom: 8px;
+}
+
+[data-theme="dark"] #preview-h1 { color: #f0ede8; }
+
+#preview-sub {
+  font-size: 15px;
+  font-weight: 500;
+  color: #6b6560;
+  margin-bottom: 16px;
+  letter-spacing: 0.01em;
+}
+
+[data-theme="dark"] #preview-sub { color: #9d9890; }
+
+#preview-p {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #3a3733;
+  max-width: 56ch;
+  margin-bottom: 24px;
+}
+
+[data-theme="dark"] #preview-p { color: #c8c4bc; }
+
+#preview-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 11px 22px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: default;
+  border: none;
+  transition: none;
+}
+
+/* ═══════════════════════════════════════════════
+   EXPORT AREA
+═══════════════════════════════════════════════ */
+.export-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 560px) { .export-grid { grid-template-columns: 1fr; } }
+
+.export-block {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.export-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+}
+
+.export-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+pre.export-code {
+  margin: 0;
+  padding: 14px;
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--text);
+  overflow-x: auto;
+  white-space: pre;
+  max-height: 160px;
+  overflow-y: auto;
+  background: var(--bg-card);
+}
+
+/* ═══════════════════════════════════════════════
+   FAVORITES
+═══════════════════════════════════════════════ */
+.favorites-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-panel);
+  transition: border-color var(--transition);
+}
+
+.fav-item:hover { border-color: var(--border-strong); }
+
+.fav-swatches {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.fav-swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.fav-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.fav-fonts {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fav-date {
+  font-size: 11px;
+  color: var(--text-faint);
+  margin-top: 1px;
+}
+
+.fav-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.fav-btn {
+  font-size: 12px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  font-family: 'Instrument Sans', sans-serif;
+  font-weight: 500;
+  transition: background var(--transition), color var(--transition);
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.fav-btn:hover { background: var(--bg-card); color: var(--text); }
+.fav-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.fav-btn-delete { color: #dc2626; border-color: rgba(220,38,38,0.2); }
+.fav-btn-delete:hover { background: rgba(220,38,38,0.07); color: #dc2626; border-color: rgba(220,38,38,0.4); }
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-faint);
+  font-size: 14px;
+}
+
+.empty-state svg { display: block; margin: 0 auto 12px; opacity: 0.4; }
+
+/* ═══════════════════════════════════════════════
+   TOAST NOTIFICATIONS
+═══════════════════════════════════════════════ */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: var(--text);
+  color: var(--bg);
+  border-radius: 100px;
+  font-size: 13.5px;
+  font-weight: 500;
+  box-shadow: var(--shadow-md);
+  animation: toastIn 250ms ease forwards;
+  pointer-events: none;
+  max-width: 90vw;
+}
+
+.toast.fade-out { animation: toastOut 200ms ease forwards; }
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes toastOut {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 0; transform: translateY(-6px) scale(0.96); }
+}
+
+/* ═══════════════════════════════════════════════
+   KEYBOARD SHORTCUT BADGES
+═══════════════════════════════════════════════ */
+kbd {
+  display: inline-block;
+  padding: 1px 6px;
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--bg-panel);
+  box-shadow: 0 1px 0 var(--border-strong);
+}
+
+/* ═══════════════════════════════════════════════
+   THEME TOGGLE
+═══════════════════════════════════════════════ */
+.theme-toggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.theme-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.toggle-track {
+  position: absolute;
+  inset: 0;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-strong);
+  border-radius: 100px;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.theme-toggle input:checked + .toggle-track { background: var(--accent); border-color: var(--accent); }
+
+.toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  background: var(--text);
+  border-radius: 50%;
+  transition: transform var(--transition), background var(--transition);
+  pointer-events: none;
+}
+
+.theme-toggle input:checked + .toggle-track .toggle-thumb {
+  transform: translateX(20px);
+  background: #fff;
+}
+
+.theme-toggle input:focus-visible + .toggle-track {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ═══════════════════════════════════════════════
+   SWATCH ANIMATION
+═══════════════════════════════════════════════ */
+@keyframes swatchFadeIn {
+  from { opacity: 0; transform: translateY(8px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.swatch-wrap {
+  animation: swatchFadeIn 280ms ease both;
+}
+
+.swatch-wrap:nth-child(1) { animation-delay: 0ms; }
+.swatch-wrap:nth-child(2) { animation-delay: 40ms; }
+.swatch-wrap:nth-child(3) { animation-delay: 80ms; }
+.swatch-wrap:nth-child(4) { animation-delay: 120ms; }
+.swatch-wrap:nth-child(5) { animation-delay: 160ms; }
+.swatch-wrap:nth-child(6) { animation-delay: 200ms; }
+
+/* ═══════════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════════ */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 20px 0;
+}
+
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.footer-shortcuts {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--text-faint);
+}
+
+.shortcut-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.footer-copy {
+  font-size: 11.5px;
+  color: var(--text-faint);
+}
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════ */
+@media (min-width: 768px) {
+  .main-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .palette-section { grid-column: 1 / -1; }
+  .preview-section { grid-column: 1 / -1; }
+  .favorites-section { grid-column: 1 / -1; }
+}
+
+@media (max-width: 480px) {
+  .container { padding: 0 16px; }
+  .card-body { padding: 16px; }
+  .btn { padding: 8px 13px; font-size: 13px; }
+  .logo-tag { display: none; }
+  .controls { gap: 6px; }
+  .export-grid { grid-template-columns: 1fr; }
+}
+
+/* ═══════════════════════════════════════════════
+   DIVIDER TEXT
+═══════════════════════════════════════════════ */
+.section-gap { margin-top: 8px; }
+</style>
+</head>
+
+<body>
+<!-- ═══ HEADER ═══════════════════════════════════ -->
+<header role="banner">
+  <div class="container">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-mark">Æsthetic<span>.</span></span>
+        <span class="logo-tag" aria-hidden="true">Generator</span>
+      </div>
+
+      <div class="header-actions">
+        <!-- Dark/light toggle -->
+        <label class="theme-toggle" title="Toggle dark/light mode" aria-label="Toggle dark mode">
+          <input type="checkbox" id="theme-toggle" role="switch" aria-checked="false">
+          <span class="toggle-track" aria-hidden="true">
+            <span class="toggle-thumb"></span>
+          </span>
+        </label>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══ MAIN ════════════════════════════════════ -->
+<main role="main">
+  <div class="container">
+
+    <!-- Controls Row -->
+    <div class="controls" role="toolbar" aria-label="Generator controls">
+      <button id="btn-shuffle" class="btn btn-primary btn-shuffle" aria-label="Shuffle — generate new palette and fonts (Space)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
+        Shuffle
+        <kbd aria-label="Space key">Space</kbd>
+      </button>
+
+      <button id="btn-save" class="btn btn-secondary" aria-label="Save current combination to favorites (S key)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Save
+        <kbd>S</kbd>
+      </button>
+
+      <button id="btn-copy-css" class="btn btn-ghost" aria-label="Copy CSS variables (C key)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy CSS
+        <kbd>C</kbd>
+      </button>
+
+      <button id="btn-export-json" class="btn btn-ghost" aria-label="Export as JSON">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export JSON
+      </button>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="main-grid">
+
+      <!-- Palette Card -->
+      <section class="card palette-section" aria-labelledby="palette-title">
+        <div class="card-header">
+          <h2 class="card-title" id="palette-title">Color Palette</h2>
+          <span id="palette-name" style="font-size:12px; color:var(--text-muted); font-weight:500;"></span>
+        </div>
+        <div class="card-body">
+          <div class="swatches" id="swatches" role="list" aria-label="Color swatches — click to copy hex value"></div>
+        </div>
+      </section>
+
+      <!-- Font Pairing Card -->
+      <section class="card" aria-labelledby="font-title" id="font-section">
+        <div class="card-header">
+          <h2 class="card-title" id="font-title">Font Pairing</h2>
+        </div>
+        <div class="card-body">
+          <div class="font-meta">
+            <div class="font-chip">
+              <span class="font-chip-label">Heading</span>
+              <span class="font-chip-name" id="heading-font-name"></span>
+            </div>
+            <div class="font-chip">
+              <span class="font-chip-label">Body</span>
+              <span class="font-chip-name" id="body-font-name"></span>
+            </div>
+          </div>
+          <div class="preview-wrap" aria-label="Font preview">
+            <h1 id="preview-h1">The quick fox jumps</h1>
+            <p id="preview-sub">Designed for clarity, built for impact</p>
+            <p id="preview-p">Typography shapes how readers experience your words. A well-chosen pairing brings hierarchy, rhythm, and personality to any design — turning plain text into something worth reading.</p>
+            <button id="preview-btn" tabindex="-1" aria-hidden="true">Get Started →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Export Card -->
+      <section class="card" aria-labelledby="export-title">
+        <div class="card-header">
+          <h2 class="card-title" id="export-title">Export</h2>
+        </div>
+        <div class="card-body">
+          <div class="export-grid">
+            <div class="export-block">
+              <div class="export-block-header">
+                <span class="export-label">CSS Variables</span>
+                <button class="btn btn-ghost" style="padding:4px 10px; font-size:12px;" id="btn-copy-css-inline" aria-label="Copy CSS variables">Copy</button>
+              </div>
+              <pre class="export-code" id="css-output" aria-label="CSS variables output"></pre>
+            </div>
+            <div class="export-block">
+              <div class="export-block-header">
+                <span class="export-label">JSON</span>
+                <button class="btn btn-ghost" style="padding:4px 10px; font-size:12px;" id="btn-copy-json" aria-label="Copy JSON">Copy</button>
+              </div>
+              <pre class="export-code" id="json-output" aria-label="JSON output"></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Favorites Panel -->
+      <section class="card favorites-section" aria-labelledby="fav-title">
+        <div class="card-header">
+          <h2 class="card-title" id="fav-title">Favorites</h2>
+          <span id="fav-count" style="font-size:12px; color:var(--text-faint);"></span>
+        </div>
+        <div class="card-body" style="padding:0">
+          <div id="favorites-list" aria-label="Saved favorites" role="list"></div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</main>
+
+<!-- ═══ FOOTER ═══════════════════════════════════ -->
+<footer role="contentinfo">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-shortcuts" aria-label="Keyboard shortcuts">
+        <span class="shortcut-item"><kbd>Space</kbd> Shuffle</span>
+        <span class="shortcut-item"><kbd>S</kbd> Save</span>
+        <span class="shortcut-item"><kbd>C</kbd> Copy CSS</span>
+      </div>
+      <span class="footer-copy">MIT License · Google Fonts</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══ TOAST CONTAINER ═══════════════════════════ -->
+<div class="toast-container" id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+<!-- ═══════════════════════════════════════════════
+   SCRIPT — Self-contained, no dependencies
+════════════════════════════════════════════════ -->
+<script>
+'use strict';
+
+/* ─────────────────────────────────────────────────
+   CURATED FONT LIST
+   Each entry: { heading, body, weights }
+   Only load the weights we actually need.
+───────────────────────────────────────────────── */
+const FONT_PAIRS = [
+  { heading: 'Playfair Display', body: 'Source Sans 3', hw: '400;600;700', bw: '300;400;500' },
+  { heading: 'Fraunces',         body: 'Inter',          hw: '300;600;800', bw: '400;500' },
+  { heading: 'Syne',             body: 'Syne',           hw: '700;800',     bw: '400;500' },
+  { heading: 'Cabinet Grotesk',  body: 'Satoshi',        hw: '700;800',     bw: '400;500' },
+  { heading: 'Cormorant',        body: 'Jost',           hw: '300;600;700', bw: '400;500' },
+  { heading: 'Plus Jakarta Sans',body: 'Plus Jakarta Sans',hw:'600;700',   bw: '300;400' },
+  { heading: 'Bodoni Moda',      body: 'DM Sans',        hw: '400;700',     bw: '300;400;500' },
+  { heading: 'Libre Baskerville',body: 'Libre Franklin', hw: '400;700',     bw: '300;400' },
+  { heading: 'Space Grotesk',    body: 'Space Grotesk',  hw: '700',         bw: '300;400' },
+  { heading: 'Raleway',          body: 'Mulish',         hw: '600;800',     bw: '300;400;500' },
+  { heading: 'Bricolage Grotesque', body: 'Literata',    hw: '400;700;800', bw: '400;500' },
+  { heading: 'Epilogue',         body: 'Epilogue',       hw: '700;900',     bw: '300;400' },
+  { heading: 'Unbounded',        body: 'Nunito',         hw: '700;900',     bw: '300;400' },
+  { heading: 'Tenor Sans',       body: 'EB Garamond',    hw: '400',         bw: '400;500' },
+  { heading: 'Anton',            body: 'Barlow',         hw: '400',         bw: '300;400;500' },
+];
+
+/* ─────────────────────────────────────────────────
+   CURATED PALETTE LIBRARY
+   ~40 palettes with 4–6 colors each.
+───────────────────────────────────────────────── */
+const PALETTES = [
+  // ── DEFAULTS (first 3 are the named curated defaults) ──
+  { name: 'Minimal', colors: ['#FAFAFA','#E5E5E5','#737373','#404040','#0A0A0A','#2563EB'] },
+  { name: 'Playful', colors: ['#FFF1F2','#FBBF24','#F97316','#EC4899','#8B5CF6','#06B6D4'] },
+  { name: 'Bold',    colors: ['#0F172A','#1E293B','#0EA5E9','#38BDF8','#F0F9FF','#7C3AED'] },
+
+  // ── ADDITIONAL ──
+  { name: 'Terracotta', colors: ['#FDF0EB','#F4B8A3','#D97060','#9E3B2A','#3D1C14','#F7C59F'] },
+  { name: 'Forest',     colors: ['#F0FDF4','#BBF7D0','#22C55E','#15803D','#14532D','#A3E635'] },
+  { name: 'Slate',      colors: ['#F8FAFC','#CBD5E1','#64748B','#334155','#0F172A','#38BDF8'] },
+  { name: 'Marigold',   colors: ['#FEFCE8','#FDE047','#FACC15','#EAB308','#713F12','#F97316'] },
+  { name: 'Plum',       colors: ['#FAF5FF','#DDD6FE','#A78BFA','#7C3AED','#4C1D95','#F472B6'] },
+  { name: 'Coastal',    colors: ['#ECFEFF','#A5F3FC','#22D3EE','#0891B2','#164E63','#F0F9FF'] },
+  { name: 'Dusk',       colors: ['#2D1B69','#6B46C1','#9F7AEA','#F6E05E','#FEB2B2','#E9D8FD'] },
+  { name: 'Sakura',     colors: ['#FFF5F7','#FED7E2','#FC8181','#E53E3E','#742A2A','#F687B3'] },
+  { name: 'Nordic',     colors: ['#F0F4F8','#D9E2EC','#9FB3C8','#486581','#102A43','#D64045'] },
+  { name: 'Latte',      colors: ['#F9F4EF','#E6D7C3','#BFA78A','#8C6A4F','#4A3728','#D4A96A'] },
+  { name: 'Emerald',    colors: ['#ECFDF5','#A7F3D0','#34D399','#059669','#064E3B','#6EE7B7'] },
+  { name: 'Neon Night', colors: ['#0D0D0D','#1A1A2E','#16213E','#00D4FF','#F72585','#B5E853'] },
+  { name: 'Rose Gold',  colors: ['#FFF1F0','#FECACA','#F9A8D4','#E879A8','#9F1239','#FDE8D0'] },
+  { name: 'Midnight',   colors: ['#030712','#111827','#374151','#6B7280','#E5E7EB','#818CF8'] },
+  { name: 'Peach Fuzz', colors: ['#FFF7ED','#FED7AA','#FDBA74','#F97316','#9A3412','#FEF3C7'] },
+  { name: 'Desert',     colors: ['#FFF8F0','#F5D6B4','#D4935A','#9E5A1C','#4A2800','#E8C9A0'] },
+  { name: 'Lagoon',     colors: ['#E0F7FA','#80DEEA','#26C6DA','#00838F','#006064','#F9A825'] },
+  { name: 'Grape',      colors: ['#F3E8FF','#C084FC','#9333EA','#6D28D9','#3B0764','#F0ABFC'] },
+  { name: 'Copper',     colors: ['#FDF8F3','#F0CBA1','#C08040','#8B5E3C','#3D2B1F','#D97706'] },
+  { name: 'Glacier',    colors: ['#EFF6FF','#BFDBFE','#60A5FA','#2563EB','#1E3A8A','#F0F9FF'] },
+  { name: 'Charcoal',   colors: ['#1C1C1E','#3A3A3C','#636366','#AEAEB2','#F2F2F7','#FF9F0A'] },
+  { name: 'Blossom',    colors: ['#FDF4FF','#F0ABFC','#D946EF','#A21CAF','#581C87','#FDF2F8'] },
+];
+
+/* ─────────────────────────────────────────────────
+   CURRENT STATE
+───────────────────────────────────────────────── */
+let state = {
+  palette: [],
+  paletteName: '',
+  font: null,
+};
+
+/* ─────────────────────────────────────────────────
+   WCAG CONTRAST UTILITIES
+───────────────────────────────────────────────── */
+
+/**
+ * Convert hex (#rrggbb) to linear RGB [0–1] array.
+ * Handles both #rgb and #rrggbb shorthand.
+ */
+function hexToLinear(hex) {
+  const h = hex.replace('#', '');
+  const full = h.length === 3 ? h.split('').map(c => c + c).join('') : h;
+  return [0, 2, 4].map(i => {
+    const c = parseInt(full.slice(i, i + 2), 16) / 255;
+    return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  });
+}
+
+/**
+ * Relative luminance per WCAG 2.1.
+ */
+function luminance(hex) {
+  const [r, g, b] = hexToLinear(hex);
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+/**
+ * Contrast ratio between two hex colors.
+ * Returns a number like 4.5 (higher = more contrast).
+ */
+function checkContrast(hex1, hex2) {
+  const l1 = luminance(hex1);
+  const l2 = luminance(hex2);
+  const lighter = Math.max(l1, l2);
+  const darker  = Math.min(l1, l2);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+/* ─────────────────────────────────────────────────
+   PALETTE UTILITIES
+───────────────────────────────────────────────── */
+
+/**
+ * Pick a random palette from the curated list.
+ * Returns { name, colors }.
+ */
+function getRandomPalette() {
+  return PALETTES[Math.floor(Math.random() * PALETTES.length)];
+}
+
+/* ─────────────────────────────────────────────────
+   FONT UTILITIES
+───────────────────────────────────────────────── */
+
+/**
+ * Pick a random font pair from the curated list.
+ */
+function pickFontPair() {
+  return FONT_PAIRS[Math.floor(Math.random() * FONT_PAIRS.length)];
+}
+
+/** Currently injected font link elements (so we can avoid duplicates). */
+const loadedFonts = new Set();
+
+/**
+ * Dynamically inject a Google Fonts <link> for a font pair.
+ * Only loads each family once per session.
+ */
+function applyFonts(pair) {
+  const families = [
+    `${pair.heading.replace(/ /g, '+')}:wght@${pair.hw}`,
+    `${pair.body.replace(/ /g, '+')}:wght@${pair.bw}`,
+  ];
+
+  families.forEach(fam => {
+    if (loadedFonts.has(fam)) return;
+    loadedFonts.add(fam);
+
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = `https://fonts.googleapis.com/css2?family=${fam}&display=swap`;
+    document.head.appendChild(link);
+  });
+
+  // Apply to preview elements
+  document.getElementById('preview-h1').style.fontFamily = `'${pair.heading}', serif`;
+  document.getElementById('preview-sub').style.fontFamily = `'${pair.heading}', serif`;
+  document.getElementById('preview-p').style.fontFamily  = `'${pair.body}', sans-serif`;
+  document.getElementById('preview-btn').style.fontFamily = `'${pair.body}', sans-serif`;
+
+  // Update chip labels
+  document.getElementById('heading-font-name').textContent = pair.heading;
+  document.getElementById('body-font-name').textContent    = pair.body;
+}
+
+/* ─────────────────────────────────────────────────
+   RENDER PALETTE
+───────────────────────────────────────────────── */
+
+/**
+ * Render the color swatches into #swatches.
+ * Each swatch shows hex + contrast badges (AA vs white/black).
+ */
+function renderPalette(colors, name) {
+  const container = document.getElementById('swatches');
+  container.innerHTML = ''; // Clear with animation restart trick
+
+  // Use the first non-white-ish color as preview button bg
+  const btnBg = colors.find(c => luminance(c) < 0.5) || colors[colors.length - 1];
+  const btnFg = checkContrast(btnBg, '#ffffff') >= 4.5 ? '#ffffff' : '#000000';
+  document.getElementById('preview-btn').style.background = btnBg;
+  document.getElementById('preview-btn').style.color = btnFg;
+
+  // Update palette name label
+  document.getElementById('palette-name').textContent = name || '';
+
+  colors.forEach((hex, i) => {
+    const ratioW = checkContrast(hex, '#FFFFFF');
+    const ratioB = checkContrast(hex, '#000000');
+    const passW  = ratioW >= 4.5;
+    const passB  = ratioB >= 4.5;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'swatch-wrap';
+    wrap.setAttribute('role', 'listitem');
+    wrap.style.animationName = 'none'; // reset
+    void wrap.offsetWidth;
+    wrap.style.animationName = '';
+
+    const swatch = document.createElement('button');
+    swatch.className = 'swatch';
+    swatch.style.background = hex;
+    swatch.setAttribute('aria-label', `Copy color ${hex} to clipboard`);
+    swatch.setAttribute('title', hex);
+
+    const hint = document.createElement('span');
+    hint.className = 'swatch-copy-hint';
+    hint.textContent = 'COPY';
+    hint.setAttribute('aria-hidden', 'true');
+    swatch.appendChild(hint);
+
+    swatch.addEventListener('click', () => copyToClipboard(hex, `Copied ${hex}`));
+    swatch.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); copyToClipboard(hex, `Copied ${hex}`); }
+    });
+
+    const hexLabel = document.createElement('span');
+    hexLabel.className = 'swatch-hex';
+    hexLabel.textContent = hex.toUpperCase();
+    hexLabel.setAttribute('aria-hidden', 'true');
+
+    const badges = document.createElement('div');
+    badges.className = 'contrast-badges';
+    badges.setAttribute('role', 'group');
+    badges.setAttribute('aria-label', `Contrast ratios for ${hex}`);
+
+    // White badge
+    const bW = document.createElement('span');
+    bW.className = `badge ${passW ? 'badge-pass' : 'badge-fail'}`;
+    bW.textContent = `W ${ratioW.toFixed(1)}`;
+    bW.setAttribute('aria-label', `vs White: ${ratioW.toFixed(1)}:1 — AA ${passW ? 'Pass' : 'Fail'}`);
+
+    // Black badge
+    const bB = document.createElement('span');
+    bB.className = `badge ${passB ? 'badge-pass' : 'badge-fail'}`;
+    bB.textContent = `K ${ratioB.toFixed(1)}`;
+    bB.setAttribute('aria-label', `vs Black: ${ratioB.toFixed(1)}:1 — AA ${passB ? 'Pass' : 'Fail'}`);
+
+    badges.appendChild(bW);
+    badges.appendChild(bB);
+
+    wrap.appendChild(swatch);
+    wrap.appendChild(hexLabel);
+    wrap.appendChild(badges);
+    container.appendChild(wrap);
+  });
+}
+
+/* ─────────────────────────────────────────────────
+   EXPORT UTILITIES
+───────────────────────────────────────────────── */
+
+/**
+ * Build the CSS variables string from current state.
+ */
+function exportCSSVars() {
+  const lines = [':root {'];
+  state.palette.forEach((hex, i) => {
+    lines.push(`  --color-${i + 1}: ${hex.toUpperCase()};`);
+  });
+  if (state.font) {
+    lines.push(`  --font-heading: '${state.font.heading}', serif;`);
+    lines.push(`  --font-body: '${state.font.body}', sans-serif;`);
+  }
+  lines.push('}');
+  return lines.join('\n');
+}
+
+/**
+ * Build the JSON string from current state.
+ * Returns a valid JSON object.
+ */
+function exportJSON() {
+  const obj = {
+    palette: state.palette.map(c => c.toUpperCase()),
+    paletteName: state.paletteName || '',
+    fonts: state.font ? { heading: state.font.heading, body: state.font.body } : {},
+    contrast: state.palette.map(hex => ({
+      hex: hex.toUpperCase(),
+      vsWhite: parseFloat(checkContrast(hex, '#FFFFFF').toFixed(2)),
+      vsBlack: parseFloat(checkContrast(hex, '#000000').toFixed(2)),
+      passAA_white: checkContrast(hex, '#FFFFFF') >= 4.5,
+      passAA_black: checkContrast(hex, '#000000') >= 4.5,
+    })),
+  };
+  return JSON.stringify(obj, null, 2);
+}
+
+/**
+ * Update the export code blocks in the DOM.
+ */
+function updateExportPreviews() {
+  document.getElementById('css-output').textContent  = exportCSSVars();
+  document.getElementById('json-output').textContent = exportJSON();
+}
+
+/* ─────────────────────────────────────────────────
+   CLIPBOARD UTILITIES
+───────────────────────────────────────────────── */
+
+/**
+ * Copy text to clipboard with fallback for older browsers.
+ * Shows a toast on success.
+ */
+function copyToClipboard(text, message) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text)
+      .then(() => showToast(message || 'Copied!', '✓'))
+      .catch(() => fallbackCopy(text, message));
+  } else {
+    fallbackCopy(text, message);
+  }
+}
+
+function fallbackCopy(text, message) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
+  document.body.appendChild(ta);
+  ta.focus(); ta.select();
+  try { document.execCommand('copy'); showToast(message || 'Copied!', '✓'); }
+  catch { showToast('Copy failed — try manually', '✗'); }
+  document.body.removeChild(ta);
+}
+
+/* ─────────────────────────────────────────────────
+   TOAST
+───────────────────────────────────────────────── */
+
+function showToast(msg, icon = '✓') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.setAttribute('role', 'status');
+  toast.textContent = `${icon} ${msg}`;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add('fade-out');
+    toast.addEventListener('animationend', () => toast.remove());
+  }, 2000);
+}
+
+/* ─────────────────────────────────────────────────
+   FAVORITES — LocalStorage
+   Key: aesthetic.favorites (JSON array of combos)
+───────────────────────────────────────────────── */
+
+const FAV_KEY = 'aesthetic.favorites';
+
+function loadFavorites() {
+  try {
+    return JSON.parse(localStorage.getItem(FAV_KEY)) || [];
+  } catch { return []; }
+}
+
+function saveFavorites(favs) {
+  try { localStorage.setItem(FAV_KEY, JSON.stringify(favs)); }
+  catch { showToast('Storage full — cannot save', '✗'); }
+}
+
+/**
+ * Save current state to favorites.
+ */
+function saveFavorite() {
+  const favs = loadFavorites();
+  const entry = {
+    id: Date.now(),
+    date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+    palette: [...state.palette],
+    paletteName: state.paletteName,
+    font: { ...state.font },
+  };
+  favs.unshift(entry); // Most recent first
+  saveFavorites(favs);
+  renderFavorites();
+  showToast(`Saved — ${entry.paletteName || 'Custom'}`, '★');
+}
+
+/**
+ * Re-apply a saved favorite to current state.
+ */
+function applyFavorite(entry) {
+  state.palette = [...entry.palette];
+  state.paletteName = entry.paletteName;
+  state.font = { ...entry.font };
+
+  renderPalette(state.palette, state.paletteName);
+  applyFonts(state.font);
+  updateExportPreviews();
+  showToast(`Applied — ${entry.paletteName || 'Custom'}`, '✓');
+}
+
+/**
+ * Delete a favorite by id.
+ */
+function deleteFavorite(id) {
+  const favs = loadFavorites().filter(f => f.id !== id);
+  saveFavorites(favs);
+  renderFavorites();
+}
+
+/**
+ * Render the favorites list into #favorites-list.
+ */
+function renderFavorites() {
+  const favs = loadFavorites();
+  const list = document.getElementById('favorites-list');
+  const count = document.getElementById('fav-count');
+
+  count.textContent = favs.length ? `${favs.length} saved` : '';
+
+  if (favs.length === 0) {
+    list.innerHTML = `
+      <div class="empty-state">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+        </svg>
+        <p>No favorites yet — hit <kbd>S</kbd> to save</p>
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = '';
+  const ul = document.createElement('div');
+  ul.className = 'favorites-list';
+  ul.style.padding = '12px';
+  ul.setAttribute('role', 'list');
+
+  favs.forEach(fav => {
+    const item = document.createElement('div');
+    item.className = 'fav-item';
+    item.setAttribute('role', 'listitem');
+
+    // Mini swatches
+    const swatchRow = document.createElement('div');
+    swatchRow.className = 'fav-swatches';
+    swatchRow.setAttribute('aria-hidden', 'true');
+    fav.palette.slice(0, 5).forEach(hex => {
+      const s = document.createElement('div');
+      s.className = 'fav-swatch';
+      s.style.background = hex;
+      s.title = hex;
+      swatchRow.appendChild(s);
+    });
+
+    const info = document.createElement('div');
+    info.className = 'fav-info';
+
+    const fonts = document.createElement('div');
+    fonts.className = 'fav-fonts';
+    fonts.textContent = `${fav.paletteName || 'Custom'} · ${fav.font?.heading || ''}`;
+
+    const date = document.createElement('div');
+    date.className = 'fav-date';
+    date.textContent = fav.date;
+
+    info.appendChild(fonts);
+    info.appendChild(date);
+
+    const actions = document.createElement('div');
+    actions.className = 'fav-actions';
+
+    const applyBtn = document.createElement('button');
+    applyBtn.className = 'fav-btn';
+    applyBtn.textContent = 'Apply';
+    applyBtn.setAttribute('aria-label', `Apply ${fav.paletteName || 'Custom'} combination`);
+    applyBtn.addEventListener('click', () => applyFavorite(fav));
+
+    const delBtn = document.createElement('button');
+    delBtn.className = 'fav-btn fav-btn-delete';
+    delBtn.textContent = 'Delete';
+    delBtn.setAttribute('aria-label', `Delete ${fav.paletteName || 'Custom'} combination`);
+    delBtn.addEventListener('click', () => {
+      delBtn.disabled = true;
+      deleteFavorite(fav.id);
+    });
+
+    actions.appendChild(applyBtn);
+    actions.appendChild(delBtn);
+
+    item.appendChild(swatchRow);
+    item.appendChild(info);
+    item.appendChild(actions);
+    ul.appendChild(item);
+  });
+
+  list.appendChild(ul);
+}
+
+/* ─────────────────────────────────────────────────
+   SHUFFLE — Core action
+───────────────────────────────────────────────── */
+
+function shuffle() {
+  const palObj = getRandomPalette();
+  state.palette = palObj.colors;
+  state.paletteName = palObj.name;
+  state.font = pickFontPair();
+
+  renderPalette(state.palette, state.paletteName);
+  applyFonts(state.font);
+  updateExportPreviews();
+}
+
+/* ─────────────────────────────────────────────────
+   THEME — LocalStorage key: aesthetic.settings
+───────────────────────────────────────────────── */
+
+const SETTINGS_KEY = 'aesthetic.settings';
+
+function loadTheme() {
+  try {
+    const s = JSON.parse(localStorage.getItem(SETTINGS_KEY));
+    return s?.theme || 'light';
+  } catch { return 'light'; }
+}
+
+function saveTheme(theme) {
+  try {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify({ theme }));
+  } catch {}
+}
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  const toggle = document.getElementById('theme-toggle');
+  toggle.checked = theme === 'dark';
+  toggle.setAttribute('aria-checked', theme === 'dark' ? 'true' : 'false');
+}
+
+/* ─────────────────────────────────────────────────
+   INITIALIZE DEFAULTS
+   The first 3 palettes are "Minimal", "Playful", "Bold"
+   We start with Minimal.
+───────────────────────────────────────────────── */
+
+function applyDefault() {
+  const def = PALETTES[0]; // Minimal
+  state.palette = def.colors;
+  state.paletteName = def.name;
+  state.font = FONT_PAIRS[0]; // Playfair + Source Sans 3
+
+  renderPalette(state.palette, state.paletteName);
+  applyFonts(state.font);
+  updateExportPreviews();
+}
+
+/* ─────────────────────────────────────────────────
+   EVENT LISTENERS
+───────────────────────────────────────────────── */
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Theme
+  const theme = loadTheme();
+  applyTheme(theme);
+
+  document.getElementById('theme-toggle').addEventListener('change', e => {
+    const t = e.target.checked ? 'dark' : 'light';
+    applyTheme(t);
+    saveTheme(t);
+  });
+
+  // Buttons
+  document.getElementById('btn-shuffle').addEventListener('click', shuffle);
+  document.getElementById('btn-save').addEventListener('click', saveFavorite);
+
+  document.getElementById('btn-copy-css').addEventListener('click', () => {
+    copyToClipboard(exportCSSVars(), 'CSS variables copied');
+  });
+
+  document.getElementById('btn-copy-css-inline').addEventListener('click', () => {
+    copyToClipboard(exportCSSVars(), 'CSS variables copied');
+  });
+
+  document.getElementById('btn-export-json').addEventListener('click', () => {
+    downloadJSON(exportJSON(), 'aesthetic.json');
+  });
+
+  document.getElementById('btn-copy-json').addEventListener('click', () => {
+    copyToClipboard(exportJSON(), 'JSON copied');
+  });
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', e => {
+    // Skip if user is in an input/textarea
+    const tag = document.activeElement?.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+    if (document.activeElement?.isContentEditable) return;
+
+    if (e.code === 'Space') { e.preventDefault(); shuffle(); }
+    if (e.key === 's' || e.key === 'S') { e.preventDefault(); saveFavorite(); }
+    if (e.key === 'c' || e.key === 'C') { e.preventDefault(); copyToClipboard(exportCSSVars(), 'CSS variables copied'); }
+  });
+
+  // Initialize
+  applyDefault();
+  renderFavorites();
+});
+
+/* ─────────────────────────────────────────────────
+   JSON DOWNLOAD UTILITY
+───────────────────────────────────────────────── */
+
+function downloadJSON(jsonStr, filename) {
+  const blob = new Blob([jsonStr], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('JSON downloaded', '↓');
+}
+</script>
+</body>
+</html>
